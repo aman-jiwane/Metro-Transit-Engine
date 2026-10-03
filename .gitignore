@@ -1,0 +1,17 @@
+# Ignore build outputs and temporary artifacts
+build/
+bin/
+*.exe
+*.obj
+*.o
+*.a
+*.dll
+*.log
+error_log.txt
+
+# Ignore runtime generated databases
+*.db
+
+# Ignore IDE configurations
+.vscode/
+.idea/
