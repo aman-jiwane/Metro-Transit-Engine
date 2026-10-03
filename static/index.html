@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pune Metro Route Planner</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  
+  <header>
+    <h1>🚇 Pune Metro Transit System</h1>
+    <p>Real-time routing, ticketing, and administration.</p>
+  </header>
+
+  <main>
+    <nav class="tab-bar" role="tablist">
+      <button class="tab active" role="tab" aria-selected="true" data-tab="journey">🗺️ Journey Planner</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="wallet">💳 Smart Card</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="admin">🛠️ Admin</button>
+    </nav>
+
+    <div id="tab-journey" class="tab-panel active" role="tabpanel">
+      
+      <div class="card">
+        <h2>Plan Your Journey</h2>
+        <div class="row">
+          <label for="route-from" class="sr-only">Origin Station</label>
+          <select id="route-from" class="station-select">
+            <option value="">From station…</option>
+          </select>
+          
+          <button class="swap-btn" id="btn-swap-stations" type="button" title="Swap stations">⇅</button>
+          
+          <label for="route-to" class="sr-only">Destination Station</label>
+          <select id="route-to" class="station-select">
+            <option value="">To station…</option>
+          </select>
+          
+          <label for="route-strategy" class="sr-only">Routing Strategy</label>
+          <select id="route-strategy">
+            <option value="fastest">Fastest (Dijkstra)</option>
+            <option value="fewest">Fewest stations (BFS)</option>
+          </select>
+          
+          <button id="btn-search-route">Search</button>
+        </div>
+        <div id="route-result" class="route-result-container" aria-live="polite"></div>
+      </div>
+
+      <div class="card">
+        <h2>Gate Simulation (Turnstile)</h2>
+        <div class="row">
+          <label for="tap-card-id" class="sr-only">Card ID</label>
+          <input id="tap-card-id" placeholder="Card ID (e.g. USER1)">
+          
+          <label for="tap-station" class="sr-only">Station</label>
+          <select id="tap-station" class="station-select">
+            <option value="">Select Station…</option>
+          </select>
+          
+          <button id="btn-tap-in">Tap In</button>
+          <button id="btn-tap-out" class="btn-outline">Tap Out</button>
+        </div>
+        <div id="tap-result" class="tap-result-container" aria-live="polite"></div>
+      </div>
+      
+    </div>
+
+    <div id="tab-wallet" class="tab-panel" role="tabpanel">
+      <div class="card">
+        <h2>Manage Smart Card</h2>
+        <div class="row">
+          <label for="wallet-card-id" class="sr-only">Card ID</label>
+          <input id="wallet-card-id" placeholder="Card ID (e.g. USER1)">
+          
+          <label for="wallet-amount" class="sr-only">Recharge Amount</label>
+          <input id="wallet-amount" type="number" placeholder="Amount (₹)">
+          
+          <label for="wallet-card-type" class="sr-only">Card Type</label>
+          <select id="wallet-card-type">
+            <option value="Regular">Regular</option>
+            <option value="Student">Student</option>
+            <option value="Senior">Senior</option>
+            <option value="DailyPass">Daily Pass</option>
+          </select>
+        </div>
+        <div class="row" style="margin-top: 10px;">
+          <button id="btn-create-card">Create / Recharge</button>
+          <button id="btn-lookup-card" class="btn-outline">Check Balance</button>
+        </div>
+        <div id="card-result" class="card-widget-container" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <div id="tab-admin" class="tab-panel" role="tabpanel">
+      
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h2 style="margin: 0;">Active Incidents & Alerts</h2>
+          <button id="btn-refresh-incidents" class="btn-small">Refresh</button>
+        </div>
+        <div id="incidents-list" aria-live="polite">
+          <p style="color:var(--muted);font-size:0.85rem;">Loading incidents...</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Report Delay / Incident</h2>
+        <div class="row">
+          <label for="inc-from" class="sr-only">From Station</label>
+          <select id="inc-from" class="station-select"><option value="">From…</option></select>
+          
+          <label for="inc-to" class="sr-only">To Station</label>
+          <select id="inc-to" class="station-select"><option value="">To…</option></select>
+          
+          <label for="inc-type" class="sr-only">Incident Type</label>
+          <select id="inc-type">
+            <option value="1">Signal Failure</option>
+            <option value="2">Train Breakdown</option>
+            <option value="3">Heavy Load</option>
+          </select>
+          
+          <label for="inc-severity" class="sr-only">Severity</label>
+          <select id="inc-severity">
+            <option value="1">Minor</option>
+            <option value="2">Moderate</option>
+            <option value="3">Major</option>
+          </select>
+          
+          <label for="inc-delay" class="sr-only">Delay (min)</label>
+          <input id="inc-delay" type="number" placeholder="Delay (min)">
+          
+          <button id="btn-report-incident">Report</button>
+        </div>
+        <div id="incident-result" aria-live="polite"></div>
+      </div>
+
+      <div class="card">
+        <h2>Track Control</h2>
+        <div class="row">
+          <label for="track-from" class="sr-only">From Station</label>
+          <select id="track-from" class="station-select"><option value="">From…</option></select>
+          
+          <label for="track-to" class="sr-only">To Station</label>
+          <select id="track-to" class="station-select"><option value="">To…</option></select>
+          
+          <button id="btn-close-track" style="background: var(--error);">Close Track</button>
+          <button id="btn-reopen-track" class="btn-outline">Reopen</button>
+        </div>
+        <div id="track-result" aria-live="polite"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
